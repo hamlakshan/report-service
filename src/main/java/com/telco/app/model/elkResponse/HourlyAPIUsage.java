@@ -1,3 +1,4 @@
+
 package com.telco.app.model.elkResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,7 +15,7 @@ import com.telco.app.model.elkResponse.common.Shards;
     "hits",
     "aggregations"
 })
-public class APIUsage {
+public class HourlyAPIUsage {
 
     @JsonProperty("took")
     private Integer took;
@@ -25,7 +26,7 @@ public class APIUsage {
     @JsonProperty("hits")
     private Hits hits;
     @JsonProperty("aggregations")
-    private Aggregations aggregations;
+    private HourlyAPIUsageAggregations aggregations;
 
     @JsonProperty("took")
     public Integer getTook() {
@@ -68,13 +69,12 @@ public class APIUsage {
     }
 
     @JsonProperty("aggregations")
-    public Aggregations getAggregations() {
+    public HourlyAPIUsageAggregations getAggregations() {
         return aggregations;
     }
 
     @JsonProperty("aggregations")
-    public void setAggregations(Aggregations aggregations) {
+    public void setAggregations(HourlyAPIUsageAggregations aggregations) {
         this.aggregations = aggregations;
     }
-
 }

@@ -1,7 +1,6 @@
-package com.telco.app.core;
+package com.telco.app.model.hourlyReport;
 
-import com.telco.app.model.elkResponse.Aggregations;
-import com.telco.app.model.hourlyReport.ApiUsageReport;
+import java.util.List;
 
 /**
  * Copyright (c) 2016, WSO2.Telco Inc. (http://www.wso2telco.com) All Rights Reserved.
@@ -18,10 +17,15 @@ import com.telco.app.model.hourlyReport.ApiUsageReport;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public abstract class ReportEngine {
+public class HourlyAPIUsageReport {
 
-    public abstract ApiUsageReport generateHourlySPWiseApiUsageReport(Aggregations aggregations, double startTime);
+    private List<Api> apis;
 
-    public abstract ApiUsageReport generateDailySPWiseApiUsageReport(Aggregations aggregations, double startTime);
+    public List<Api> getApis() {
+        return apis;
+    }
 
+    public void setApis(List<Api> apis) {
+        this.apis = apis;
+    }
 }

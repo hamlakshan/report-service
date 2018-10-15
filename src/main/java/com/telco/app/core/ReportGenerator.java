@@ -1,13 +1,7 @@
 package com.telco.app.core;
 
-import com.telco.app.model.elkResponse.TransactionBucket;
-import com.telco.app.model.hourlyReport.Api;
-import com.telco.app.model.hourlyReport.ApiUsageReport;
-import com.telco.app.model.hourlyReport.ServiceProvider;
-import com.telco.app.model.hourlyReport.Transaction;
-import com.telco.app.model.elkResponse.APIBucket;
-import com.telco.app.model.elkResponse.Aggregations;
-import com.telco.app.model.elkResponse.SPBucket;
+import com.telco.app.model.elkResponse.*;
+import com.telco.app.model.hourlyReport.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +24,7 @@ import java.util.List;
  */
 public class ReportGenerator extends ReportEngine {
 
-    public ApiUsageReport generateHourlyApiUsageReport(Aggregations aggregations, double startTime) {
+    public ApiUsageReport generateHourlySPWiseApiUsageReport(Aggregations aggregations, double startTime) {
 
         ApiUsageReport apiUsageReport = new ApiUsageReport();
         List<SPBucket> buckets = aggregations.getUsenameagg().getBuckets();
@@ -80,7 +74,7 @@ public class ReportGenerator extends ReportEngine {
 
     }
 
-    public ApiUsageReport generateDailyApiUsageReport(Aggregations aggregations, double startTime) {
+    public ApiUsageReport generateDailySPWiseApiUsageReport(Aggregations aggregations, double startTime) {
 
         int datesOfMonth = getDatesOfTheMonth((long)startTime);
 
@@ -127,6 +121,48 @@ public class ReportGenerator extends ReportEngine {
             serviceProviders.add(serviceProvider);
         }
         apiUsageReport.setServiceProviders(serviceProviders);
+
+        return apiUsageReport;
+
+    }
+
+
+    public HourlyAPIUsageReport generateHourlyApiUsageReport(HourlyAPIUsageAggregations aggregations, double startTime) {
+
+        HourlyAPIUsageReport apiUsageReport = new HourlyAPIUsageReport();
+
+            List<Api> apis = new ArrayList<Api>();
+            for (APIBucket apiBucket : aggregations.getApiagg().getBuckets()) {
+                Api api = new Api();
+                api.setName(apiBucket.getKey());
+                api.setTotalAPITransactionsDay(apiBucket.getDocCount());
+                List<Transaction> transactions = new ArrayList<Transaction>();
+                int count = 0;
+                double tempStartTime = startTime;
+                TransactionBucket transactionBucket = apiBucket.getDateagg().getBuckets().get(count);
+                for (int i = 0; i < 24; i++) {
+                    Transaction transaction = new Transaction();
+                    if (transactionBucket.getKey() == tempStartTime) {
+                        transaction.setValue(transactionBucket.getDocCount());
+                        transaction.setDateInEpochMilliseconds(transactionBucket.getKey());
+                        transaction.setAverage(transactionBucket.getDocCount()/3600);
+                        count++;
+                    } else {
+                        transaction.setValue(0);
+                        transaction.setDateInEpochMilliseconds(tempStartTime);
+                        transaction.setAverage(0);
+                    }
+                    tempStartTime += 3600000;
+                    transactions.add(transaction);
+                    if (count < apiBucket.getDateagg().getBuckets().size()) {
+                        transactionBucket = apiBucket.getDateagg().getBuckets().get(count);
+                    }
+                }
+
+                api.setTransactions(transactions);
+                apis.add(api);
+            }
+
 
         return apiUsageReport;
 

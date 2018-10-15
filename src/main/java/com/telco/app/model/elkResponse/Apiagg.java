@@ -1,11 +1,11 @@
 
 package com.telco.app.model.elkResponse;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -21,8 +21,6 @@ public class Apiagg {
     private Integer sumOtherDocCount;
     @JsonProperty("buckets")
     private List<APIBucket> buckets = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("doc_count_error_upper_bound")
     public Integer getDocCountErrorUpperBound() {
@@ -52,16 +50,6 @@ public class Apiagg {
     @JsonProperty("buckets")
     public void setBuckets(List<APIBucket> buckets) {
         this.buckets = buckets;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }

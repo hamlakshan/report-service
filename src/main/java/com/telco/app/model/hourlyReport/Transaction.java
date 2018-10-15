@@ -19,6 +19,15 @@ public class Transaction {
 
     private int value;
     private double dateInEpochMilliseconds;
+    private double average;
+
+    public double getAverage() {
+        return average;
+    }
+
+    public void setAverage(double average) {
+        this.average = average;
+    }
 
     public int getValue() {
         return value;

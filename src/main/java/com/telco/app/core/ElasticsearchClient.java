@@ -2,6 +2,7 @@ package com.telco.app.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.telco.app.model.elkResponse.APIUsage;
+import com.telco.app.model.elkResponse.HourlyAPIUsage;
 import com.telco.app.model.hourlyReport.ApiUsageReport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,6 +135,33 @@ public class ElasticsearchClient {
         } catch (IOException e) {
             log.error("Exception while calling post request" + e);
         }
+    }
+
+
+    public HourlyAPIUsage getHourlyAPIUsage(double beginOfDay, double endOfDay, String timeZone, String interval) {
+
+        String request = "{ \"size\": 0, \"_source\": { \"excludes\": [] }, \"aggs\": { \"apiagg\": { \"terms\": { \"field\": \"api.keyword\", \"size\": 20, \"order\": { \"_count\": \"desc\" } }, \"aggs\": { \"dateagg\": { \"date_histogram\": { \"field\": \"@timestamp\", \"interval\": \""+ interval+ "\", \"time_zone\": \"" + timeZone + "\", \"min_doc_count\": 0 } } } } }, \"stored_fields\": [ \"*\" ], \"script_fields\": {}, \"docvalue_fields\": [ \"@timestamp\" ], \"query\": { \"bool\": { \"must\": [ { \"match_all\": {} }, { \"range\": { \"@timestamp\": { \"gte\": "+ beginOfDay+ ", \"lte\": "+ endOfDay+ ", \"format\": \"epoch_millis\" } } } ], \"filter\": [], \"should\": [], \"must_not\": [] } } }";
+
+        HttpPost httpPost = new HttpPost(new StringBuilder(ELKIP.getValue()).append(REQUEST_INDEX.getValue()).append(LATTER.getValue()).toString());
+        /** add headers */
+        httpPost.setHeader("Content-Type", "application/json");
+
+        try {
+            /** set request body */
+            httpPost.setEntity(new StringEntity(request));
+
+            HttpResponse response = client.execute(httpPost);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                HourlyAPIUsage apiUsage = mapper.readValue(response.getEntity().getContent(), HourlyAPIUsage.class);
+                return apiUsage;
+            } else {
+                log.error(response.getStatusLine().getStatusCode() + "error while adding data to index");
+            }
+        } catch (IOException e) {
+            log.error("exception while executing the get hourly api usage post request " + e);
+        }
+
+        return null;
     }
 }
 

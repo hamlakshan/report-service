@@ -1,10 +1,9 @@
 
-package com.telco.app.model.elkResponse;
+package com.telco.app.model.elkResponse.common;
 
-import com.fasterxml.jackson.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -23,8 +22,6 @@ public class Shards {
     private Integer skipped;
     @JsonProperty("failed")
     private Integer failed;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("total")
     public Integer getTotal() {
@@ -65,15 +62,4 @@ public class Shards {
     public void setFailed(Integer failed) {
         this.failed = failed;
     }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
 }
